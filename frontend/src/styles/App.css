@@ -1,0 +1,81 @@
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-bar {
+  background: #222;
+  color: #eee;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.left-panel {
+  width: 40%;
+  border-right: 1px solid #ddd;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.right-panel {
+  width: 60%;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.chat-output {
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 12px;
+  background: #fafafa;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-input {
+  resize: none;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.send-btn {
+  padding: 8px 14px;
+  background: #222;
+  color: #eee;
+  border: none;
+  cursor: pointer;
+}
+
+.send-btn:hover {
+  background: #333;
+}
+
+.data-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background: #222;
+  color: #eee;
+  padding: 8px;
+  text-align: left;
+}
+
+.data-table td {
+  padding: 6px;
+  border-bottom: 1px solid #ddd;
+}

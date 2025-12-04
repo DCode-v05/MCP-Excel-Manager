@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+httpx
+pydantic
+pandas
+openpyxl
+anthropic
+google-genai
+mcp
+mcp[cli]
+google.generativeai
