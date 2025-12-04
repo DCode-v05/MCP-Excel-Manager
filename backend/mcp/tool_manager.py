@@ -68,6 +68,28 @@ class ToolManager:
     # ----------------------------------------
     # 2) EXTRACT GEMINI TOOL CALLS
     # ----------------------------------------
+    @staticmethod
+    def _proto_to_dict(proto_obj):
+        """
+        Recursively convert protobuf objects to native Python types.
+        """
+        from proto.marshal.collections.maps import MapComposite
+        from proto.marshal.collections.repeated import RepeatedComposite
+        
+        if isinstance(proto_obj, MapComposite):
+            # Convert protobuf map to regular dict
+            return {k: ToolManager._proto_to_dict(v) for k, v in proto_obj.items()}
+        elif isinstance(proto_obj, RepeatedComposite):
+            # Convert protobuf repeated field to list
+            return [ToolManager._proto_to_dict(item) for item in proto_obj]
+        elif isinstance(proto_obj, dict):
+            return {k: ToolManager._proto_to_dict(v) for k, v in proto_obj.items()}
+        elif isinstance(proto_obj, (list, tuple)):
+            return [ToolManager._proto_to_dict(item) for item in proto_obj]
+        else:
+            # Return primitive types as-is
+            return proto_obj
+        
     @classmethod
     def extract_tool_calls(cls, response):
         calls = []
@@ -85,7 +107,7 @@ class ToolManager:
 
                 calls.append({
                     "name": fc.name,
-                    "arguments": dict(fc.args or {})
+                    "arguments": cls._proto_to_dict(fc.args) if fc.args else {}
                 })
         return calls    
 

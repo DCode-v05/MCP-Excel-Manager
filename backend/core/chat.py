@@ -56,12 +56,10 @@ class Chat:
         4. Resume chat with tool results
         5. Repeat until final text reply
         """
-        final_text_response = ""
-
         await self._process_user_query(query)
 
         while True:
-            # 1) Collect all available tools (from MCP servers)
+            # 1) Collect all available tools
             tools_schema = await ToolManager.get_all_tools_schema(self.mcp_clients)
             
             # 2) Call Gemini with history + tool schemas
@@ -73,11 +71,12 @@ class Chat:
             # 3) Inspect Gemini response for tool calls
             tool_calls = ToolManager.extract_tool_calls(response)
 
-            # -------- 1️⃣ NO tool calls → Model is done
+            # If NO tool calls → Model is done, extract final text
             if not tool_calls:
                 reply = self.gemini_service.extract_text(response)
-                self.messages.append({"role": "model", "content": reply})
-                return reply
+                if reply:  # Only add if there's actual text
+                    self.messages.append({"role": "model", "content": reply})
+                return reply if reply else "Task completed successfully."
 
             logger.info(f"Gemini requested tools: {tool_calls}")
 
@@ -86,39 +85,19 @@ class Chat:
                 self.mcp_clients,
                 tool_calls,
             )
-            # 5) Add tool results into history as if "function" role
-            for result in tool_results:
-                self.messages.append({
-                    "role": "user",
-                    "content": json.dumps(result["content"])
-                })
-            # 6) Ask Gemini to continue, now with tool results
+            
+            # 5) Resume with tool results
             response = await self.gemini_service.resume_with_tool_results(
                 messages=self.messages,
                 tool_response=tool_results,
                 tools_schema=tools_schema,
             )
-
-            # Check if Gemini again wants tools
-            second_round_tool_calls = ToolManager.extract_tool_calls(response)
-
-            if not second_round_tool_calls:
-                final_text_response = self.gemini_service.extract_text(response)
-                self.messages.append(
-                    {"role": "model", "content": final_text_response}
-                )
-                break
-
-            # Otherwise, loop again with more tools
-            logger.info(f"Gemini requested additional tools: {second_round_tool_calls}")
-            # prepare history to include that intermediate assistant response, too
-            self.messages.append(
-                {
-                    "role": "model",
-                    "content": self.gemini_service.extract_text(response),
-                }
-            )
-            # by overwriting tool_calls
-            tool_calls = second_round_tool_calls
-
-        return final_text_response
+            
+            # 6) Extract text if any and add to history
+            reply = self.gemini_service.extract_text(response)
+            if reply:
+                self.messages.append({"role": "model", "content": reply})
+                
+            # Note: We don't return here even if there's text,
+            # because there might be more tool calls in the response.
+            # The loop will check at the top and handle accordingly.
