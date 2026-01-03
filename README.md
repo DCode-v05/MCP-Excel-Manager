@@ -1,4 +1,4 @@
-# MCP Server Client (Excel AI Assistant)
+# MCP Excel Sheet Manager
 
 ## Project Description
 This project is an advanced AI assistant that leverages the **Model Context Protocol (MCP)** to bridge Large Language Models (LLMs) like Google Gemini with local data sources. Currently focused on Excel integration, it allows users to chat with their spreadsheets—reading, analyzing, and modifying data through natural language commands. The application features a modern React frontend and a robust FastAPI backend acting as an MCP Client.
@@ -33,8 +33,8 @@ Interacting with structured data in files like Excel often requires manual manip
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/DCode-v05/MCP-Server-Client.git
-cd MCP-Server-Client
+git clone https://github.com/DCode-v05/MCP-Excel-Manager.git
+cd MCP-Excel-Manager
 ```
 
 ### 2. Install dependencies
@@ -80,7 +80,7 @@ npm run dev
 
 ## Project Structure
 ```
-MCP-Server-Client/
+MCP-Excel-Manager/
 │
 ├── backend/
 │   ├── api/
